@@ -6,6 +6,7 @@
     "vhc-serve": "bin/vhc-serve.js"
   },
   "dependencies": {
+    "compression": "1.6.2",
     "express": "4.13.4",
     "fs-promise": "0.5.0",
     "mkdirp": "0.5.1",
