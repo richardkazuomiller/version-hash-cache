@@ -1,16 +1,33 @@
+'use strict';
 const VHCServer = require('../lib/server')
 const http = require('http')
 const https = require('https')
 const fs = require('fs')
 
+const vhcServers = {}
+
 const config = JSON.parse(fs.readFileSync(process.argv[2]))
-const vhc = new VHCServer(config)
 
-vhc.on('ready',function(){
-  console.log('VHC server ready')
-})
+for(let host in config.hosts){
+  console.log(host)
+  const hostConfig = config.hosts[host]
+  if(hostConfig.alias){
+    vhcServers[host] = {
+      alias: hostConfig.alias
+    }
+  }
+  else{
+    const vhc = new VHCServer(hostConfig)
+    vhc.on('ready',function(){
+      console.log('VHC server ready')
+    })
+    vhcServers[host] = vhc
+  }
+}
 
-const httpServer = http.createServer(vhc.serveRequest).listen(config.httpPort || 8000)
+console.log(vhcServers)
+
+const httpServer = http.createServer(serveRequest).listen(config.httpPort || 8000)
 
 if(config.https){
   const httpsServer = https.createServer(
@@ -19,7 +36,7 @@ if(config.https){
       cert: fs.readFileSync(config.https.certFilename),
       ca: fs.readFileSync(config.https.caFilename)
     },
-    vhc.serveRequest
+    serveRequest
   )
   httpsServer.listen(config.httpsPort)
   process.on('SIGINT',function(){
@@ -31,6 +48,31 @@ process.on('SIGINT',function(){
   vhc.shutdown = true
   shutdownServer(httpServer,'HTTP')
 })
+
+function serveRequest(req,res){
+  if(vhc){
+    vhc.serveRequest(req,res)
+  }
+  else{
+    res.statusCode = 404
+    res.write('Not found')
+    res.end()
+  }
+}
+
+function getVHCServerForRequest(req){
+  const hostHeader = req.headers.host || ''
+  const host = hostHeader.split(':')[0]
+  return getVHCServerForHost(host)
+}
+
+function getVHCServerForHost(host){
+  const vhc = vhcServers[host] || vhcServers['default']
+  if(vhc.alias){
+    return getVHCServerForHost(vhc.alias)
+  }
+  return vhc
+}
 
 function shutdownServer(server,type){
   if(config.exitImmediately){
