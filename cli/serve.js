@@ -50,6 +50,7 @@ process.on('SIGINT',function(){
 })
 
 function serveRequest(req,res){
+  const vhc = getVHCServerForRequest(req)
   if(vhc){
     vhc.serveRequest(req,res)
   }
