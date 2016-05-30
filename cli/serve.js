@@ -17,6 +17,9 @@ for(let host in config.hosts){
     }
   }
   else{
+    const sshKeyStageDir = config.sshKeyStageDir || '/tmp'
+    hostConfig.host = host
+    hostConfig.sshKeyStageDir = sshKeyStageDir+'/'+host
     const vhc = new VHCServer(hostConfig)
     vhc.on('ready',function(){
       console.log('VHC server ready')
