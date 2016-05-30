@@ -20,6 +20,14 @@ for(let host in config.hosts){
     const sshKeyStageDir = config.sshKeyStageDir || '/tmp'
     hostConfig.host = host
     hostConfig.sshKeyStageDir = sshKeyStageDir+'/'+host
+    if(config.sourceDir){
+      if(!hostConfig.versionsPath){
+        hostConfig.versionsPath = config.sourceDir+'/'+host+'/versions'
+      }
+      if(!hostConfig.sourceGitPath){
+        hostConfig.sourceGitPath = config.sourceDir+'/'+host+'/repository'
+      }
+    }
     const vhc = new VHCServer(hostConfig)
     vhc.on('ready',function(){
       console.log('VHC server ready')
