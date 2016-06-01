@@ -5,8 +5,16 @@ const http = require('http')
 const https = require('https')
 const fs = require('fs')
 const fsp = require('fs-promise')
+const program = require('commander')
 
-const configFilename = process.argv[2]
+program
+  .version(require('../package.json').version)
+  .option('--config <path>','Configuration file')
+  .parse(process.argv)
+
+const configFilename = program.config
+
+console.log(program)
 
 fs.watch(
   configFilename,
