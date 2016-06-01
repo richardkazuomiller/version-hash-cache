@@ -4,6 +4,7 @@ const MultipleHostVHCServer = require('../lib/multiple-host-server')
 const http = require('http')
 const https = require('https')
 const fs = require('fs')
+const fsp = require('fs-promise')
 
 const configFilename = process.argv[2]
 
@@ -13,9 +14,17 @@ fs.watch(
     persistent: false
   },
   function(err,filename){
-    console.log('----hoge----')
+    updateConfig()
   }
 )
+
+function updateConfig(){
+  fsp.readFile(configFilename)
+    .then(function(contents){
+      const config = JSON.parse(contents)
+      mhvhcServer.setConfig(config)
+    })
+}
 
 const config = JSON.parse(fs.readFileSync(configFilename))
 
