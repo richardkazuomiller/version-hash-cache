@@ -16,8 +16,18 @@ program
   .option('--sekando-cloud-api-secret <secret>','Sekando Cloud API key secret')
   .option('--config-sekando-cloud-cluster-id <cluster-id>','Sekando Cloud cluster ID')
   .option('--config-sekando-cloud-member-id <member-id>','Sekando Cloud member ID')
+  .option('--machine-id-file <path>','Path to file containing machine id (default: /etc/machine-id)')
+  .option('--machine-id <machine-id>','Machine ID used for some API requests')
   .parse(process.argv)
-
+  
+let machineId = program.machineId
+if(!machineId){
+  const machineIdFile = program.machineIdFile || '/etc/machine-id'
+  const exists = fs.existsSync(machineIdFile)
+  if(exists){
+    machineId = fs.readFileSync(machineIdFile).toString()
+  }
+}
 
 const configFilename = program.configFile
 const sekandoCloudProject = program.sekandoCloudProject
@@ -34,10 +44,14 @@ else{
 }
 
 function startWithSekandoProject(){
+  if(!machineId){
+    console.log('Defining a machine ID is not required, but you should set one using --machine-id or --machine-id-file')
+  }
   const sekando = new SekandoCloudClient({
     projectId: program.sekandoCloudProject,
     apiKey: program.sekandoCloudApiKey,
     apiSecret: program.sekandoCloudApiSecret,
+    id: machineId
   })
   const clusterManager = sekando.clusterManager()
   const cluster = clusterManager.clusterWithId(program.configSekandoCloudClusterId)
