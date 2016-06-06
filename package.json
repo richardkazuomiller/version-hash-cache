@@ -13,6 +13,7 @@
     "html-minifier": "2.1.3",
     "mkdirp": "0.5.1",
     "mkdirp-promise": "2.0.0",
-    "nodegit": "0.13.0"
+    "nodegit": "0.13.0",
+    "sekando-cloud-client": "sekando/sekando-cloud-client-node"
   }
 }
