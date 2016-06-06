@@ -80,20 +80,26 @@ function start(config){
   
   const httpServer = http.createServer(mhvhcServer.serveRequest).listen(config.httpPort || 8000)
   
-  if(config.https){
-    const httpsServer = https.createServer(
-      {
-        key: fs.readFileSync(config.https.keyFilename),
-        cert: fs.readFileSync(config.https.certFilename),
-        ca: fs.readFileSync(config.https.caFilename)
-      },
-      mhvhcServer.serveRequest
-    )
-    httpsServer.listen(config.httpsPort)
-    process.on('SIGINT',function(){
-      shutdownServer(httpsServer,'HTTPS')
-    })
+  try {
+    if(config.https){
+      const httpsServer = https.createServer(
+        {
+          key: fs.readFileSync(config.https.keyFilename),
+          cert: fs.readFileSync(config.https.certFilename),
+          ca: fs.readFileSync(config.https.caFilename)
+        },
+        mhvhcServer.serveRequest
+      )
+      httpsServer.listen(config.httpsPort)
+      process.on('SIGINT',function(){
+        shutdownServer(httpsServer,'HTTPS')
+      })
+    }
   }
+  catch(e){
+    console.log(e)
+  }
+  
   
   process.on('SIGINT',function(){
     mhvhcServer.shutdown = true
