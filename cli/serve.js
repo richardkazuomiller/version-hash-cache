@@ -25,7 +25,7 @@ if(!machineId){
   const machineIdFile = program.machineIdFile || '/etc/machine-id'
   const exists = fs.existsSync(machineIdFile)
   if(exists){
-    machineId = fs.readFileSync(machineIdFile).toString()
+    machineId = fs.readFileSync(machineIdFile).toString().split('\n')[0]
   }
 }
 
