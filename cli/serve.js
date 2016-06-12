@@ -63,6 +63,9 @@ function startWithSekandoProject(){
         mhvhcServer.setConfig(JSON.parse(member.metadata))
       })
     })
+    .catch(function(err){
+      console.log(err)
+    })
 }
 
 function startWithFilename(configFilename){
