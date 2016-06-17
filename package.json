@@ -14,6 +14,6 @@
     "mkdirp": "0.5.1",
     "mkdirp-promise": "2.0.0",
     "nodegit": "0.13.0",
-    "sekando-cloud-client": "0.0.1"
+    "sekando-cloud-client": "0.0.2-beta.0"
   }
 }
